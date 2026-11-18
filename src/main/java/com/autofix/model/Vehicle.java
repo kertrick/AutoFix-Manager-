@@ -12,8 +12,10 @@ public class Vehicle {
     @ManyToOne(optional = false)
     private Customer customer;
 
-
+    @Column(nullable = false)
     private String brand;
+
+    @Column(nullable = false)
     private String model;
 
     @Column(unique = true, nullable = false, length = 17)
