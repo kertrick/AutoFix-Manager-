@@ -21,6 +21,7 @@ public class Vehicle {
     @Column(unique = true, nullable = false, length = 17)
     private String vin;
 
+    @Column(unique = true, nullable = false)
     private String registrationNumber;
 
     public Long getId() {
