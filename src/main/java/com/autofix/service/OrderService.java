@@ -1,4 +1,96 @@
-package com.autofix.service;
+    package com.autofix.service;
 
-public class OrderService {
-}
+    import com.autofix.dto.CreateOrderRequest;
+    import com.autofix.dto.OrderResponse;
+    import com.autofix.exception.ConflictException;
+    import com.autofix.model.Customer;
+    import com.autofix.model.Order;
+    import com.autofix.model.Vehicle;
+    import com.autofix.repository.CustomerRepository;
+    import com.autofix.repository.OrderRepository;
+    import com.autofix.repository.VehicleRepository;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
+
+    import java.util.Optional;
+
+    @Service
+    public class OrderService {
+
+        private CustomerRepository customerRepository;
+        private OrderRepository orderRepository;
+        private VehicleRepository vehicleRepository;
+
+        public OrderService(CustomerRepository customerRepository, OrderRepository orderRepository, VehicleRepository vehicleRepository) {
+            this.customerRepository = customerRepository;
+            this.orderRepository = orderRepository;
+            this.vehicleRepository = vehicleRepository;
+        }
+
+        @Transactional
+        public OrderResponse createOrder(CreateOrderRequest request) {
+            String phoneNumber = request.getPhoneNumber().trim();
+            String vin = request.getVin().trim().toUpperCase();
+            String registrationNumber = request.getRegistrationNumber().trim().toUpperCase().replace(" ", "");
+
+
+            Optional<Customer> found = customerRepository.findByPhoneNumber(phoneNumber);
+
+            Customer customer;
+            if (found.isPresent()) {
+                customer = found.get();
+            } else {
+                customer = new Customer();
+                customer.setName(request.getCustomerName());
+                customer.setPhoneNumber(phoneNumber);
+                customer = customerRepository.save(customer);
+            }
+
+            Optional<Vehicle> foundVehicle = vehicleRepository.findByVin(vin);
+
+            Vehicle vehicle;
+            if (foundVehicle.isPresent()) {
+                vehicle = foundVehicle.get();
+                if (!vehicle.getCustomer().getId().equals(customer.getId())) {
+                    throw new ConflictException("The vehicle with this VIN is registered to another customer");
+                }
+            } else {
+                if (vehicleRepository.findByRegistrationNumber(registrationNumber).isPresent()) {
+                    throw new ConflictException("This registration number is already used");
+                }
+                vehicle = new Vehicle();
+                vehicle.setBrand(request.getBrand());
+                vehicle.setModel(request.getModel());
+                vehicle.setVin(vin);
+                vehicle.setRegistrationNumber(registrationNumber);
+                vehicle.setCustomer(customer);
+                vehicle = vehicleRepository.save(vehicle);
+            }
+
+            Order order = new Order();
+            order.setVehicle(vehicle);
+            order.setMileage(request.getMileage());
+            order.setFaultDescription(request.getFaultDescription());
+            order = orderRepository.save(order);
+
+            OrderResponse response = new OrderResponse();
+            response.setId(order.getId());
+            response.setAccessCode(order.getAccessCode());
+            response.setStatus(order.getStatus());
+            response.setCreatedAt(order.getCreatedAt());
+            response.setUpdatedAt(order.getUpdatedAt());
+            response.setMileage(order.getMileage());
+            response.setFaultDescription(order.getFaultDescription());
+            response.setCustomerName(customer.getName());
+            response.setPhoneNumber(customer.getPhoneNumber());
+            response.setBrand(vehicle.getBrand());
+            response.setModel(vehicle.getModel());
+            response.setVin(vehicle.getVin());
+            response.setRegistrationNumber(vehicle.getRegistrationNumber());
+            return response;
+
+
+
+        }
+
+    }
