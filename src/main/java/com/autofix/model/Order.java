@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Table(name = "orders")
 @Entity
@@ -29,7 +28,7 @@ public class Order {
     private RepairStatus status = RepairStatus.RECEIVED;
 
     @Column (unique = true, nullable = false)
-    private String accessCode = UUID.randomUUID().toString();
+    private String accessCode;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

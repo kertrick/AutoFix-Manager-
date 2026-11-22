@@ -15,16 +15,19 @@ import com.autofix.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OrderService {
+    public class OrderService {
 
-    private CustomerRepository customerRepository;
-    private OrderRepository orderRepository;
-    private VehicleRepository vehicleRepository;
+        private CustomerRepository customerRepository;
+        private OrderRepository orderRepository;
+        private VehicleRepository vehicleRepository;
+        private String Alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+        private SecureRandom random = new SecureRandom();
 
     public OrderService(CustomerRepository customerRepository, OrderRepository orderRepository, VehicleRepository vehicleRepository) {
         this.customerRepository = customerRepository;
@@ -37,7 +40,6 @@ public class OrderService {
         String phoneNumber = request.getPhoneNumber().trim();
         String vin = request.getVin().trim().toUpperCase();
         String registrationNumber = request.getRegistrationNumber().trim().toUpperCase().replace(" ", "");
-
 
         Optional<Customer> found = customerRepository.findByPhoneNumber(phoneNumber);
 
@@ -76,6 +78,7 @@ public class OrderService {
         order.setVehicle(vehicle);
         order.setMileage(request.getMileage());
         order.setFaultDescription(request.getFaultDescription());
+        order.setAccessCode(generateUniqueCode());
         order = orderRepository.save(order);
 
         return toResponse(order);
@@ -148,7 +151,7 @@ public class OrderService {
     @Transactional
     public PublicOrderResponse trackOrder(String accessCode) {
 
-        Optional<Order> found = orderRepository.findByAccessCode(accessCode);
+        Optional<Order> found = orderRepository.findByAccessCode(accessCode.trim().toUpperCase());
 
         if (found.isPresent()) {
             Order order = found.get();
@@ -156,6 +159,26 @@ public class OrderService {
         } else {
             throw new NotFoundException("Order with this access code " + accessCode + " not found");
         }
+    }
+
+    private String generateCode() {
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int index = random.nextInt(Alphabet.length());
+            char symbol = Alphabet.charAt(index);
+            code.append(symbol);
+        }
+        return code.toString();
+    }
+
+    private String generateUniqueCode() {
+        String code;
+        do {
+            code = generateCode();
+        } while (orderRepository.findByAccessCode(code).isPresent());
+        return code;
+
+
     }
 
 }
