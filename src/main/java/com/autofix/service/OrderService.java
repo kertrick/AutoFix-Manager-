@@ -84,7 +84,7 @@ import java.util.Optional;
         return toResponse(order);
     }
 
-    private OrderResponse toResponse(Order order) {
+    public OrderResponse toResponse(Order order) {
         Vehicle vehicle = order.getVehicle();
         Customer customer = vehicle.getCustomer();
 
