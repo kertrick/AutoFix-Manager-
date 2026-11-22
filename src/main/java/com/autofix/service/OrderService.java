@@ -2,6 +2,7 @@ package com.autofix.service;
 
 import com.autofix.dto.CreateOrderRequest;
 import com.autofix.dto.OrderResponse;
+import com.autofix.dto.PublicOrderResponse;
 import com.autofix.exception.ConflictException;
 import com.autofix.exception.NotFoundException;
 import com.autofix.model.Customer;
@@ -101,6 +102,17 @@ public class OrderService {
         return response;
     }
 
+    private PublicOrderResponse toPublicResponse(Order order) {
+        PublicOrderResponse response = new PublicOrderResponse();
+        response.setStatus(order.getStatus());
+        response.setBrand(order.getVehicle().getBrand());
+        response.setModel(order.getVehicle().getModel());
+        response.setFaultDescription(order.getFaultDescription());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        return response;
+    }
+
     @Transactional
     public List<OrderResponse> getOrders(RepairStatus status) {
         List<Order> orders;
@@ -130,6 +142,19 @@ public class OrderService {
             return toResponse(order);
         } else {
             throw new NotFoundException("Order with id " + id + " not found");
+        }
+    }
+
+    @Transactional
+    public PublicOrderResponse trackOrder(String accessCode) {
+
+        Optional<Order> found = orderRepository.findByAccessCode(accessCode);
+
+        if (found.isPresent()) {
+            Order order = found.get();
+            return toPublicResponse(order);
+        } else {
+            throw new NotFoundException("Order with this access code " + accessCode + " not found");
         }
     }
 
