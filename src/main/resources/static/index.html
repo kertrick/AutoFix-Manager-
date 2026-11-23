@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFix Manager — System Warsztatowy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="#new-order" data-section="new-order" class="logo">🔧 AutoFix <span>Manager</span></a>
+            <nav class="nav-links">
+                <a href="#new-order" data-section="new-order" class="active">Nowe zgłoszenie</a>
+                <a href="#board" data-section="board">Tablica napraw</a>
+                <a href="#history" data-section="history">Historia VIN</a>
+                <a href="#client-portal" data-section="client-portal">Portal klienta</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- ВКЛАДКА 1: Нове zgłoszenie (Sprint 1 / US1) -->
+        <section id="new-order" class="card">
+            <div class="card-header">
+                <h1>Rejestracja nowego zgłoszenia serwisowego</h1>
+                <p>Wprowadź dane klienta oraz pojazdu, aby utworzyć zlecenie i wygenerować kod śledzenia.</p>
+            </div>
+
+            <form id="repairOrderForm" class="order-form">
+                <fieldset>
+                    <legend>Dane klienta</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="clientName">Imię i nazwisko *</label>
+                            <input type="text" id="clientName" name="clientName" placeholder="np. Jan Kowalski" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientPhone">Telefon kontaktowy *</label>
+                            <input type="tel" id="clientPhone" name="clientPhone" placeholder="np. +48 500 600 700" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="clientEmail">Adres e-mail (opcjonalnie)</label>
+                            <input type="email" id="clientEmail" name="clientEmail" placeholder="jan.kowalski@example.com">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Dane pojazdu</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="carBrand">Marka *</label>
+                            <input type="text" id="carBrand" name="carBrand" placeholder="np. Volkswagen" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carModel">Model *</label>
+                            <input type="text" id="carModel" name="carModel" placeholder="np. Golf VII" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="licensePlate">Numer rejestracyjny *</label>
+                            <input type="text" id="licensePlate" name="licensePlate" placeholder="np. WX 12345" style="text-transform: uppercase;" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vin">Numer VIN (17 znaków) *</label>
+                            <input type="text" id="vin" name="vin" maxlength="17" minlength="17" placeholder="np. WVWZZZAUZHW123456" style="text-transform: uppercase;" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mileage">Aktualny przebieg (km) *</label>
+                            <input type="number" id="mileage" name="mileage" min="0" placeholder="np. 145000" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Szczegóły usterki</legend>
+                    <div class="form-group full-width">
+                        <label for="issueDescription">Opis usterki / zakres prac *</label>
+                        <textarea id="issueDescription" name="issueDescription" rows="4" placeholder="Opisz objawy zgłaszane przez klienta (np. stuki w przednim zawieszeniu, wymiana oleju i filtrów)..." required></textarea>
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-secondary">Wyczyść formularz</button>
+                    <button type="submit" class="btn btn-primary">Utwórz zgłoszenie</button>
+                </div>
+            </form>
+
+            <div id="orderResult" class="result-box hidden">
+                <h3>✅ Zgłoszenie zostało zarejestrowane!</h3>
+                <p>Przekaż klientowi poniższy unikalny kod do śledzenia statusu naprawy:</p>
+                <div class="tracking-code" id="generatedCode">AFX-84920</div>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 2: Tablica napraw (Sprint 2 / US3) -->
+        <section id="board" class="card hidden">
+            <div class="card-header">
+                <h2>Tablica statusów napraw</h2>
+                <p>Podgląd statusów zleceń w warsztacie (Sprint 2 — integracja z API w przygotowaniu).</p>
+            </div>
+            <div class="kanban-grid">
+                <div class="kanban-col">
+                    <h3>Przyjęte</h3>
+                    <div class="order-mini-card">
+                        <strong>AFX-10241</strong>
+                        <span>VW Golf VII • WX 12345</span>
+                        <small>Wymiana oleju i filtrów</small>
+                    </div>
+                </div>
+                <div class="kanban-col">
+                    <h3>W trakcie</h3>
+                    <div class="order-mini-card">
+                        <strong>AFX-10238</strong>
+                        <span>Audi A4 • WB 98765</span>
+                        <small>Diagnostyka zawieszenia</small>
+                    </div>
+                </div>
+                <div class="kanban-col">
+                    <h3>Czeka na części</h3>
+                    <div class="order-mini-card">
+                        <strong>AFX-10230</strong>
+                        <span>BMW 320d • EL 44512</span>
+                        <small>Klocki hamulcowe przód</small>
+                    </div>
+                </div>
+                <div class="kanban-col">
+                    <h3>Gotowe do odbioru</h3>
+                    <div class="order-mini-card">
+                        <strong>AFX-10219</strong>
+                        <span>Skoda Octavia • KR 77810</span>
+                        <small>Przegląd okresowy</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 3: Historia VIN (Sprint 3 / US4) -->
+        <section id="history" class="card hidden">
+            <div class="card-header">
+                <h2>Historia serwisowa pojazdu</h2>
+                <p>Wyszukaj pojazd po numerze VIN lub numerze rejestracyjnym (Sprint 3).</p>
+            </div>
+            <form id="historySearchForm" class="search-row">
+                <input type="text" id="historyQuery" placeholder="Wpisz numer VIN (17 znaków) lub rejestrację..." required>
+                <button type="submit" class="btn btn-primary">Szukaj</button>
+            </form>
+            <div id="historyResult" class="info-box hidden">
+                <p><strong>Wynik wyszukiwania:</strong> <span id="historyQueryText"></span></p>
+                <p class="muted">Pełna historia napraw z bazy SQLite zostanie podpięta w Sprincie 3.</p>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 4: Portal klienta (Sprint 2 / US5) -->
+        <section id="client-portal" class="card hidden">
+            <div class="card-header">
+                <h2>Portal klienta — status naprawy</h2>
+                <p>Sprawdź aktualny etap prac nad swoim samochodem podając kod zgłoszenia.</p>
+            </div>
+            <form id="clientLookupForm" class="search-row">
+                <input type="text" id="trackingInput" placeholder="Wpisz kod zgłoszenia, np. AFX-10238" required>
+                <button type="submit" class="btn btn-primary">Sprawdź status</button>
+            </form>
+            <div id="clientStatusResult" class="info-box hidden">
+                <p><strong>Kod zgłoszenia:</strong> <span id="clientCodeDisplay"></span></p>
+                <p><strong>Aktualny status:</strong> W trakcie realizacji (podgląd testowy UI)</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
