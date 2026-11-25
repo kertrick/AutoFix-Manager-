@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Перемикання вкладок верхнього меню та логотипа
+   
     const navLinks = document.querySelectorAll('.nav-links a, .logo');
     const sections = document.querySelectorAll('main section');
     const menuItems = document.querySelectorAll('.nav-links a');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Форма створення zgłoszenia (US1)
+   
     const form = document.getElementById('repairOrderForm');
     const resultBox = document.getElementById('orderResult');
     const generatedCodeEl = document.getElementById('generatedCode');
@@ -49,21 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // Коли бекенд Владислава буде готовий, розкоментуйте запит нижче:
-            /*
-            const response = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error('Błąd zapisu zgłoszenia na serwerze');
-            }
-
-            const data = await response.json();
-            generatedCodeEl.textContent = data.trackingCode;
-            */
+        
 
             console.log('Wysyłane dane (JSON):', payload);
             const mockCode = 'AFX-' + Math.floor(10000 + Math.random() * 90000);
@@ -76,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Пошук історії за VIN / номером (прев'ю для US4)
+    
     const historyForm = document.getElementById('historySearchForm');
     const historyResult = document.getElementById('historyResult');
     const historyQueryText = document.getElementById('historyQueryText');
@@ -88,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyResult.classList.remove('hidden');
     });
 
-    // 4. Пошук статусу в порталі клієнта за кодом (прев'ю для US5)
+ 
     const clientForm = document.getElementById('clientLookupForm');
     const clientStatusResult = document.getElementById('clientStatusResult');
     const clientCodeDisplay = document.getElementById('clientCodeDisplay');
